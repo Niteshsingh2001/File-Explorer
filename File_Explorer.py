@@ -29,7 +29,7 @@ class File_Explorer(Tk):
 
         # Navigation Bar Buttons
 
-        # Back Button
+        # Back Button 
         self.back = Button(self.top_frame,text="Back",command=self.back)
         self.back.pack(fill="both",expand=0,side="left")
 
@@ -38,11 +38,11 @@ class File_Explorer(Tk):
         self.dir_path.pack(fill="both",expand=1,side="left")
 
         #Search Button
-        self.search = Button(self.top_frame,text="Refresh",command=self.search)
+        self.search = Button(self.top_frame,text="Search",command=self.search)
         self.search.pack(fill="both",expand=0,side="left")
 
         # Refresh Button 
-        self.refresh = Button(self.top_frame,text="Search",command=self.refresh_cmd)
+        self.refresh = Button(self.top_frame,text="refresh",command=self.refresh_cmd)
         self.refresh.pack(fill="both",expand=0,side="left")
         
         # Create Button
@@ -54,15 +54,21 @@ class File_Explorer(Tk):
         self.btn_rmdir.pack(fill="both",expand=0,side="left")
 
         # Main File View / List Box
-        self.block = Listbox(self.f_view,border=0,)
+        self.block = Listbox(self.f_view,border=0)
         self.block.pack(side="left",fill="both",expand=1)
 
         # ScrollBar
         scrollbar = Scrollbar(self.f_view,orient='vertical',command=self.block.yview)
         self.block['yscrollcommand'] = scrollbar.set
+        self.block.selection_set(0)
         scrollbar.pack(side="right",fill="both")
-
         
+        self.block.bind('<Button-1>', self.click)
+
+    def click(self,event):
+        
+        x = self.block.get(self.block.curselection())
+        print(x)
 
 
     def file_view(self):
@@ -85,24 +91,22 @@ class File_Explorer(Tk):
         
     def search(self):
         self.root = self.dirctory.get()
-        # print(self.root)       
-        # print(self.dirctory.get())       
+
+        self.lst = os.listdir(self.root)
+        self.lst_value =StringVar(value=self.lst)
+
+        self.block['listvariable']=self.lst_value
+        self.block.update()   
 
     def refresh_cmd(self):
-        lst = os.listdir(self.root)
-        lst_value =StringVar(value=lst)
-        self.block['listvariable']=lst_value
+        self.block['listvariable']=self.lst_value
         self.block.update()
-        
-        
-        #for i in range(len(lst)) :
-        #self.block.insert(i,lst[i])
         
 
 
 if __name__ == "__main__":
     win = File_Explorer()
-    win.refresh_cmd() 
     win.file_view()
+    
        
     win.mainloop()
