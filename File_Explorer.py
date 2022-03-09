@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import messagebox
 import os
 
 class File_Explorer(Tk):
@@ -17,12 +18,14 @@ class File_Explorer(Tk):
         self.f_view.pack(fill="both",expand=1)
 
         self.disk_frame=Frame()
+       
 
         #root location / File locations
-        # self.root = os.path.join("C:/Users")
-        self.root = os.getcwd()
+        # self.root = os.path.join("/storage/emulated/0/")
+        self.root = os.path.join("/")
+        # self.root = os.getcwd()
+        self.history_memory =[]
 
-        
         self.dirctory = StringVar()
         self.dirctory.set(self.root)
         
@@ -40,6 +43,7 @@ class File_Explorer(Tk):
         #Search Button
         self.search = Button(self.top_frame,text="Search",command=self.search)
         self.search.pack(fill="both",expand=0,side="left")
+        
 
         # Refresh Button 
         self.refresh = Button(self.top_frame,text="refresh",command=self.refresh_cmd)
@@ -63,12 +67,30 @@ class File_Explorer(Tk):
         self.block.selection_set(0)
         scrollbar.pack(side="right",fill="both")
         
-        self.block.bind('<Button-1>', self.click)
+        self.block.bind('<Double-Button-1>', self.d_click)
 
-    def click(self,event):
+    # ----------------------------Logic Here--------------------------------------
+
+    def d_click(self,event):
         
-        x = self.block.get(self.block.curselection())
-        print(x)
+        f_loction= self.block.get(self.block.curselection())
+        # if len(f_loction)==0:
+        #     f_loction.append(self.block.get(self.block.curselection()))
+        
+        # f_loction.append(f"/{self.block.get(self.block.curselection())}")
+
+        self.root = f"{self.root + f_loction}"
+
+        self.lst = os.listdir(self.root)
+        self.lst_value =StringVar(value=self.lst)
+        
+        self.history_memory.append(self.root)
+
+        self.dirctory.set(self.root)
+        self.dir_path.update()
+
+        self.block['listvariable']=self.lst_value
+        self.block.update()   
 
 
     def file_view(self):
@@ -79,21 +101,27 @@ class File_Explorer(Tk):
         
 
     def mk_folder(self):
-        os.mkdir("New Folder")
+        # os.mkdir(path=self.root,"New Folder")
+        os.mkdir(self.root)
+        print(" i am make folder")
 
     def back(self):
-        n=self.root.rfind("/")
-        d= self.root[0:n+1]
-        x=os.chdir(d)
-        print(x)
-        
-        print(self.root)
+       self.root=self.history_memory.pop()
+
+       self.lst = os.listdir(self.root)
+       self.lst_value =StringVar(value=self.lst)
+    
+       print("I am working")
+       self.block['listvariable']=self.lst_value
+       self.block.update() 
+       
         
     def search(self):
         self.root = self.dirctory.get()
 
         self.lst = os.listdir(self.root)
         self.lst_value =StringVar(value=self.lst)
+        self.history_memory.append(self.root)
 
         self.block['listvariable']=self.lst_value
         self.block.update()   
@@ -101,8 +129,6 @@ class File_Explorer(Tk):
     def refresh_cmd(self):
         self.block['listvariable']=self.lst_value
         self.block.update()
-        
-
 
 if __name__ == "__main__":
     win = File_Explorer()
