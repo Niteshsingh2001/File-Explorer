@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 import os
+import win32api
 
 class File_Explorer(Tk):
     
@@ -130,9 +131,58 @@ class File_Explorer(Tk):
         self.block['listvariable']=self.lst_value
         self.block.update()
 
+    def update_block(self):
+        pass
+
+
+#--------------------------Home--------------------------------------------
+
+
+    def icon(self,img,func):
+        ico = Label(text=img)
+        ico.pack()
+        ico.bind('<Double-Button-1>', func)
+        return ico
+
+    def home_view(self):
+        drives = win32api.GetLogicalDriveStrings()
+        disk_list = [x.rstrip("\\") for x in drives.split('\000') if x]
+
+        self.lst = disk_list
+
+        self.lst_value =StringVar(value=self.lst)
+        
+        self.history_memory.append(self.root)
+
+        self.dirctory.set(self.root)
+        self.dir_path.update()
+
+        self.block['listvariable']=self.lst_value
+        self.block.update() 
+
+    def set(self,loc):
+        
+        self.root = loc
+
+        # self.lst = os.listdir(self.root)
+        # self.lst_value =StringVar(value=self.lst)
+        
+        # self.history_memory.append(self.root)
+
+        # self.dirctory.set(self.root)
+        # self.dir_path.update()
+
+        # self.block['listvariable']=self.lst_value
+        # self.block.update()   
+
+
+        
+        
+
 if __name__ == "__main__":
+
     win = File_Explorer()
-    win.file_view()
+    win.home_view()
     
        
     win.mainloop()
