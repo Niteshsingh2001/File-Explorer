@@ -2,11 +2,10 @@ from tkinter import *
 from tkinter import messagebox
 import os
 import win32api
-
+import pop_up
 #Todo 
 '''
-new folder func
-delete folder func
+
 status bar
 '''
 
@@ -73,14 +72,14 @@ class gui(Tk):
         # Create Button
         self.btn_mkdir = Button(self.nav_frame,text="New Folder")
         self.btn_mkdir.pack(fill="both",expand=0,side="left")
-        self.btn_mkdir.bind('<Return>')
-        self.btn_mkdir.bind('<ButtonRelease-1>')
+        self.btn_mkdir.bind('<Return>',self.new_folder_btn)
+        self.btn_mkdir.bind('<ButtonRelease-1>',self.new_folder_btn)
 
         # Delete Button
         self.btn_rmdir = Button(self.nav_frame,text="Delete Folder")
         self.btn_rmdir.pack(fill="both",expand=0,side="left")
-        self.btn_rmdir.bind('<Return>')
-        self.btn_rmdir.bind('<ButtonRelease-1>')
+        self.btn_rmdir.bind('<Return>',self.del_folder_btn)
+        self.btn_rmdir.bind('<ButtonRelease-1>',self.del_folder_btn)
         
     def home_view(self):
         self.h_view = Frame(bg="White")
@@ -220,10 +219,36 @@ class gui(Tk):
         self.Entry_data.set(self.root_dir)
         self.path.update()
 
+    def new_folder_btn(self,event):
+
+        def btn1_logic(e):
+            d = win_pop.f_name.get()
+            new_folder = os.path.join(self.root_dir,d)
+            print(new_folder)
+            os.mkdir(new_folder)
+            win_pop.destroy()
+
+        win_pop = pop_up.pop_up("Create Folder","Enter Folder Name","Ok","Cancel")
+        win_pop.btn1.bind('<Return>',btn1_logic)
+        win_pop.btn1.bind('<ButtonRelease-1>',btn1_logic)
+
+        
+        
+    def del_folder_btn(self,event):
+        folder = self.lst_view.get(self.lst_view.curselection())
+        path = os.path.join(self.root_dir,folder)
+
+        user_ans = messagebox.askyesno("Alert!","Want to delete folder ?")
+        if user_ans == True:
+            os.rmdir(path)
+        
+        
 
 if __name__ == "__main__":
     
     win = gui()
+    
     win.nav_bar()
     win.home_view()
+    
     win.mainloop()
