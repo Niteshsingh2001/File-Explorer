@@ -1,13 +1,9 @@
+import time
 from tkinter import *
 from tkinter import messagebox
 import os
 import win32api
 import pop_up
-#Todo 
-'''
-
-status bar
-'''
 
 class gui(Tk):
 
@@ -123,7 +119,18 @@ class gui(Tk):
         self.lst_view['yscrollcommand'] = scrollbar.set
         self.lst_view.selection_set(0)
         scrollbar.pack(side="right",fill="both")
-      
+
+    def status_bar(self):
+        self.status_frame = Frame(bg="#4298f5")
+        self.status_frame.pack(side="bottom",fill="x")
+        
+        self.working = StringVar()
+        self.working.set("Ready")
+
+        self.status_here = Label(self.status_frame,fg="white",bg="#4298f5",textvariable=self.working)
+        self.status_here.pack(side="left")
+        self.extra_data = Label(self.status_frame,fg="white",bg="#4298f5")
+        self.extra_data.pack(side="right")
 # ---------------------------- Logic Here ---------------------------------
 
     def drive_click(self,event):
@@ -133,6 +140,7 @@ class gui(Tk):
         self.h_view.destroy()
         
         self.file_view()
+        self.extra_data["text"] = f"{len(os.listdir(self.root_dir))} Items"
         self.history_memory.append(self.root_dir)
 
     def lst_double_click(self,event):
@@ -149,6 +157,8 @@ class gui(Tk):
         self.root_dir = new_loc
         self.Entry_data.set(self.root_dir)
         self.path.update()
+
+        self.extra_data["text"] = f"{len(os.listdir(self.root_dir))} Items"
 
         self.history_memory.append(self.root_dir)
 
@@ -169,7 +179,7 @@ class gui(Tk):
 
             self.lst_view['listvariable']=lst_value
             self.lst_view.update() 
-        
+        self.extra_data["text"] = f"{len(os.listdir(self.root_dir))} Items"
         self.history_memory.append(self.root_dir)
 
     def home_btn_logic(self,event):
@@ -179,16 +189,22 @@ class gui(Tk):
 
         self.root_dir = "Home"
         self.Entry_data.set(self.root_dir)
+        self.extra_data["text"] = ""
+        self.working.set("Home")
 
         self.path.update()
 
     def refresh_btn(self,event):
 
         if self.f_view:
+
             lst_value =StringVar(value=os.listdir(self.root_dir))
             self.lst_view['listvariable']=lst_value
             self.lst_view.update()
-            print("Working")
+
+            self.working.set("Refreshed")
+
+            self.extra_data["text"] = f"{len(os.listdir(self.root_dir))} Items"
 
     def back_btn_logic(self,event):
         if len(self.history_memory) == 0:
@@ -206,6 +222,8 @@ class gui(Tk):
             self.Entry_data.set(self.root_dir)
             self.path.update()
 
+            self.extra_data["text"] = f"{len(os.listdir(self.root_dir))} Items"
+
     def forward_btn_logic(self,event):
 
         self.root_dir = self.forward_memory.pop(0)
@@ -218,21 +236,23 @@ class gui(Tk):
 
         self.Entry_data.set(self.root_dir)
         self.path.update()
+        self.extra_data["text"] = f"{len(os.listdir(self.root_dir))} Items"
 
     def new_folder_btn(self,event):
 
         def btn1_logic(e):
             d = win_pop.f_name.get()
             new_folder = os.path.join(self.root_dir,d)
-            print(new_folder)
             os.mkdir(new_folder)
+            self.working.set(f"Created Folder {d}")
             win_pop.destroy()
 
         win_pop = pop_up.pop_up("Create Folder","Enter Folder Name","Ok","Cancel")
         win_pop.btn1.bind('<Return>',btn1_logic)
         win_pop.btn1.bind('<ButtonRelease-1>',btn1_logic)
-
         
+
+        self.extra_data["text"] = f"{len(os.listdir(self.root_dir))} Items"
         
     def del_folder_btn(self,event):
         folder = self.lst_view.get(self.lst_view.curselection())
@@ -241,6 +261,10 @@ class gui(Tk):
         user_ans = messagebox.askyesno("Alert!","Want to delete folder ?")
         if user_ans == True:
             os.rmdir(path)
+            self.working.set(f"Removed Folder {folder}")
+
+
+        self.extra_data["text"] = f"{len(os.listdir(self.root_dir))} Items"
         
         
 
@@ -250,5 +274,6 @@ if __name__ == "__main__":
     
     win.nav_bar()
     win.home_view()
+    win.status_bar()
     
     win.mainloop()

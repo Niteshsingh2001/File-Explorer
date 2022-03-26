@@ -1,5 +1,5 @@
 # File-Explorer
-File Explorer made with Python using 
+File Explorer made with Python using Tkinter
 
 Functions Included
 
@@ -7,4 +7,5 @@ Functions Included
 - Directory Search Bar
 - Open Directory 
 - Refresh 
+- Status Bar
 
