@@ -1,7 +1,7 @@
 # File-Explorer
 File Explorer made with Python using Tkinter
 
-![Screenshort](File-Explorer\Screenshot.png)
+![Screenshort](Screenshot.png)
 
 Functions Included
 
